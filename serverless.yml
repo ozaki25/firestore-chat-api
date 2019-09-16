@@ -24,7 +24,7 @@ provider:
   name: aws
   runtime: nodejs10.x
   region: ap-northeast-1
-
+  profile: dev1
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
