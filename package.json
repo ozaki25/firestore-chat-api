@@ -1,0 +1,6 @@
+{
+  "name": "firestore-chat-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT"
+}
