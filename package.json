@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "deploy": "serverless deploy"
+  },
   "dependencies": {
     "express": "^4.17.1",
     "serverless-http": "^2.3.0"
