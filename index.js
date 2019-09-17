@@ -38,6 +38,7 @@ app.get('/messages', async (req, res) => {
     res.send(messages);
   } catch (e) {
     console.log(e);
+    res.status(500);
     res.send(e);
   }
 });
@@ -58,6 +59,7 @@ app.post('/messages', async (req, res) => {
     }
   } catch (e) {
     console.log(e);
+    res.status(500);
     res.send(e);
   }
 });
