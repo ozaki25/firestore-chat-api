@@ -31,7 +31,10 @@ app.get('/', (req, res) => {
 
 app.get('/messages', async (req, res) => {
   try {
-    const snapshots = await dbRef.get();
+    const snapshots = await dbRef
+      .orderBy('timestamp', 'desc')
+      .limit(10)
+      .get();
     let messages = [];
     snapshots.forEach(doc => messages.push(doc.data()));
     console.log({ messages });
@@ -54,6 +57,46 @@ app.post('/messages', async (req, res) => {
       };
       await dbRef.add(message);
       res.send(message);
+    } else {
+      res.send(null);
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500);
+    res.send(e);
+  }
+});
+
+app.get('/images', async (req, res) => {
+  try {
+    const snapshots = await dbRef
+      .orderBy('timestamp', 'desc')
+      .limit(10)
+      .get();
+    let images = [];
+    snapshots.forEach(doc => images.push(doc.data()));
+    console.log({ images });
+    res.send(images);
+  } catch (e) {
+    console.log(e);
+    res.status(500);
+    res.send(e);
+  }
+});
+
+app.post('/images', async (req, res) => {
+  try {
+    console.log(req.body);
+    const { url, comment, caption } = req.body;
+    if (url) {
+      const image = {
+        url,
+        commnet: comment || '',
+        caption: caption || '',
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      };
+      await dbRef.add(image);
+      res.send(image);
     } else {
       res.send(null);
     }
