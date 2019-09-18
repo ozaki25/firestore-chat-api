@@ -12,7 +12,7 @@ admin.initializeApp({
 
 const db = admin.firestore();
 const messagesRef = db.collection('messages');
-const imagesRef = db.collection('imagees');
+const imagesRef = db.collection('images');
 
 const app = express();
 app.use(bodyParser.json());
