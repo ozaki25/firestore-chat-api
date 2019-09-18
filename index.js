@@ -11,7 +11,8 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
-const dbRef = db.collection('messages');
+const messagesRef = db.collection('messages');
+const imagesRef = db.collection('imagees');
 
 const app = express();
 app.use(bodyParser.json());
@@ -31,7 +32,7 @@ app.get('/', (req, res) => {
 
 app.get('/messages', async (req, res) => {
   try {
-    const snapshots = await dbRef
+    const snapshots = await messagesRef
       .orderBy('timestamp', 'desc')
       .limit(10)
       .get();
@@ -55,7 +56,7 @@ app.post('/messages', async (req, res) => {
         content,
         timestamp: admin.firestore.FieldValue.serverTimestamp(),
       };
-      await dbRef.add(message);
+      await messagesRef.add(message);
       res.send(message);
     } else {
       res.send(null);
@@ -69,7 +70,7 @@ app.post('/messages', async (req, res) => {
 
 app.get('/images', async (req, res) => {
   try {
-    const snapshots = await dbRef
+    const snapshots = await imagesRef
       .orderBy('timestamp', 'desc')
       .limit(10)
       .get();
@@ -95,7 +96,7 @@ app.post('/images', async (req, res) => {
         caption: caption || '',
         timestamp: admin.firestore.FieldValue.serverTimestamp(),
       };
-      await dbRef.add(image);
+      await imagesRef.add(image);
       res.send(image);
     } else {
       res.send(null);
@@ -108,6 +109,7 @@ app.post('/images', async (req, res) => {
 });
 
 const port = '8080';
+
 app.listen(port, () => {
   console.log(`app start listening on port ${port}`);
 });
