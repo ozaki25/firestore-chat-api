@@ -30,7 +30,7 @@ app.get('/messages', async (req, res, next) => {
       .orderBy('timestamp', 'desc')
       .limit(10)
       .get();
-    const messages = snapshots.map(doc => doc.data());
+    const messages = snapshots.docs.map(doc => doc.data());
     console.log({ messages });
     res.send(messages);
   } catch (e) {
@@ -65,7 +65,7 @@ app.get('/images', async (req, res, next) => {
       .orderBy('timestamp', 'desc')
       .limit(10)
       .get();
-    const images = snapshots.map(doc => doc.data());
+    const images = snapshots.docs.map(doc => doc.data());
     console.log({ images });
     res.send(images);
   } catch (e) {
