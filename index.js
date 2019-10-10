@@ -25,6 +25,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/messages', async (req, res, next) => {
+  console.log('GET /messages');
   try {
     const snapshots = await messagesRef
       .orderBy('timestamp', 'desc')
@@ -40,6 +41,7 @@ app.get('/messages', async (req, res, next) => {
 });
 
 app.post('/messages', async (req, res, next) => {
+  console.log('POST /messages');
   try {
     console.log(req.body);
     const { content } = req.body;
@@ -59,7 +61,25 @@ app.post('/messages', async (req, res, next) => {
   }
 });
 
+app.delete('/messages/:id', async (req, res, next) => {
+  console.log('DELET /messages/:id');
+  try {
+    console.log(req.params);
+    const { id } = req.params;
+    if (id) {
+      await messagesRef.doc(id).delete();
+      res.send(null);
+    } else {
+      res.send(null);
+    }
+  } catch (e) {
+    console.log(e);
+    next(e);
+  }
+});
+
 app.get('/images', async (req, res, next) => {
+  console.log('GET /images');
   try {
     const snapshots = await imagesRef
       .orderBy('timestamp', 'desc')
@@ -75,6 +95,7 @@ app.get('/images', async (req, res, next) => {
 });
 
 app.post('/images', async (req, res, next) => {
+  console.log('POST /images');
   try {
     console.log(req.body);
     const { url, comment, caption } = req.body;
@@ -87,6 +108,23 @@ app.post('/images', async (req, res, next) => {
       };
       await imagesRef.add(image);
       res.send(image);
+    } else {
+      res.send(null);
+    }
+  } catch (e) {
+    console.log(e);
+    next(e);
+  }
+});
+
+app.delete('/images/:id', async (req, res, next) => {
+  console.log('DELETE /images/:id');
+  try {
+    console.log(req.params);
+    const { id } = req.params;
+    if (id) {
+      await imagesRef.doc(id).delete();
+      res.send(null);
     } else {
       res.send(null);
     }
