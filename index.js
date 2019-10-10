@@ -16,8 +16,8 @@ const messagesRef = db.collection('messages');
 const imagesRef = db.collection('images');
 
 const app = express();
-app.use(bodyParser.json());
 
+app.use(bodyParser.json());
 app.use(cors);
 
 app.get('/', (req, res) => {
@@ -30,8 +30,7 @@ app.get('/messages', async (req, res, next) => {
       .orderBy('timestamp', 'desc')
       .limit(10)
       .get();
-    let messages = [];
-    snapshots.forEach(doc => messages.push(doc.data()));
+    const messages = snapshots.map(doc => doc.data());
     console.log({ messages });
     res.send(messages);
   } catch (e) {
@@ -66,8 +65,7 @@ app.get('/images', async (req, res, next) => {
       .orderBy('timestamp', 'desc')
       .limit(10)
       .get();
-    let images = [];
-    snapshots.forEach(doc => images.push(doc.data()));
+    const images = snapshots.map(doc => doc.data());
     console.log({ images });
     res.send(images);
   } catch (e) {
