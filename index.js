@@ -18,7 +18,7 @@ const imagesRef = db.collection('images');
 const app = express();
 
 app.use(bodyParser.json());
-app.use(cors);
+app.use(cors());
 
 app.get('/', (req, res) => {
   res.send('Hello');
@@ -94,12 +94,6 @@ app.post('/images', async (req, res, next) => {
     console.log(e);
     next(e);
   }
-});
-
-const port = '8080';
-
-app.listen(port, () => {
-  console.log(`app start listening on port ${port}`);
 });
 
 module.exports.handler = serverless(app);
