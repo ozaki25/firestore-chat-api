@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/messages', async (req, res, next) => {
-  const { limit, startAt } = req.params;
+  const { limit, startAt } = req.query;
   console.log(`GET /messages?limit=${limit}&startAt=${startAt}`);
   try {
     const snapshots = await messagesRef
@@ -81,7 +81,7 @@ app.delete('/messages/:id', async (req, res, next) => {
 });
 
 app.get('/images', async (req, res, next) => {
-  const { limit, startAt } = req.params;
+  const { limit, startAt } = req.query;
   console.log(`GET /images?limit=${limit}&startAt=${startAt}`);
   try {
     const snapshots = await imagesRef
