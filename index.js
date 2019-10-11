@@ -25,11 +25,13 @@ app.get('/', (req, res) => {
 });
 
 app.get('/messages', async (req, res, next) => {
-  console.log('GET /messages');
+  const { limit, startAt } = req.params;
+  console.log(`GET /messages?limit=${limit}&startAt=${startAt}`);
   try {
     const snapshots = await messagesRef
       .orderBy('timestamp', 'desc')
-      .limit(10)
+      .limit(limit || 30)
+      .startAt(startAt || 0)
       .get();
     const messages = snapshots.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     console.log({ messages });
@@ -79,11 +81,13 @@ app.delete('/messages/:id', async (req, res, next) => {
 });
 
 app.get('/images', async (req, res, next) => {
-  console.log('GET /images');
+  const { limit, startAt } = req.params;
+  console.log(`GET /images?limit=${limit}&startAt=${startAt}`);
   try {
     const snapshots = await imagesRef
       .orderBy('timestamp', 'desc')
-      .limit(10)
+      .limit(limit || 10)
+      .startAt(startAt || 0)
       .get();
     const images = snapshots.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     console.log({ images });
