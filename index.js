@@ -26,11 +26,11 @@ app.get('/', (req, res) => {
 
 app.get('/messages', async (req, res, next) => {
   try {
-    const { limit: inputLimit, startAfterId } = req.query;
+    const { limit: inputLimit, startAfterId: id } = req.query;
     const limit = Number(inputLimit) || 30;
     let startAfter = '1970-01-01';
-    if (startAfterId) {
-      const doc = await messagesRef.doc(startAfterId).get();
+    if (id) {
+      const doc = await messagesRef.doc(id).get();
       if (doc.exists) startAfter = doc.data().timestamp.toDate();
     }
     console.log(`GET /messages?limit=${limit}&startAfter=${startAfter}`);
@@ -88,11 +88,20 @@ app.delete('/messages/:id', async (req, res, next) => {
 });
 
 app.get('/images', async (req, res, next) => {
-  console.log('GET /images');
+  const { limit: inputLimit, startAfterId: id } = req.query;
+  const limit = Number(inputLimit) || 10;
+  let startAfter = '1970-01-01';
+  if (id) {
+    const doc = await imagesRef.doc(id).get();
+    if (doc.exists) startAfter = doc.data().timestamp.toDate();
+  }
+  console.log(`GET /images?limit=${limit}&startAfter=${startAfter}`);
+
   try {
     const snapshots = await imagesRef
       .orderBy('timestamp', 'desc')
-      .limit(10)
+      .startAfter(startAfter)
+      .limit(limit)
       .get();
     const images = snapshots.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     console.log({ images });
