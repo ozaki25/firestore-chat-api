@@ -26,8 +26,8 @@ provider:
   region: ap-northeast-1
   profile: dev1
   environment:
-    MESSAGE_COLLECTION_NAME: 'messages',
-    IMAGE_COLLECTION_NAME: 'images',
+    MESSAGE_COLLECTION_NAME: 'messages'
+    IMAGE_COLLECTION_NAME: 'images'
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
