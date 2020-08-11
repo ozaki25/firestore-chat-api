@@ -11,9 +11,11 @@ admin.initializeApp({
   databaseURL: 'https://ippo-app.firebaseio.com',
 });
 
+const { MESSAGE_COLLECTION_NAME, IMAGE_COLLECTION_NAME } = process.env;
+
 const db = admin.firestore();
-const messagesRef = db.collection('messages');
-const imagesRef = db.collection('images');
+const messagesRef = db.collection(MESSAGE_COLLECTION_NAME);
+const imagesRef = db.collection(IMAGE_COLLECTION_NAME);
 
 const app = express();
 
