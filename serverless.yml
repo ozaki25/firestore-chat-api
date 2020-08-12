@@ -8,10 +8,63 @@ provider:
     MESSAGE_COLLECTION_NAME: 'messages'
     IMAGE_COLLECTION_NAME: 'images'
 functions:
-  app:
-    handler: index.handler
+  getMessages:
+    handler: index.getMessages
     events:
-      - http: ANY /
-      - http: 'ANY {proxy+}'
       - http:
-        cors: true
+          method: get
+          path: messages
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                limit: true
+                startAfterId: true
+  postMessages:
+    handler: index.postMessages
+    events:
+      - http:
+          method: post
+          path: messages
+          cors: true
+  deleteMessages:
+    handler: index.deleteMessages
+    events:
+      - http:
+          method: delete
+          path: messages/{id}
+          cors: true
+          request:
+            parameters:
+              paths:
+                id: true
+  getImages:
+    handler: index.getImages
+    events:
+      - http:
+          method: get
+          path: images
+          cors: true
+          request:
+            parameters:
+              querystrings:
+                limit: true
+                startAfterId: true
+  postImages:
+    handler: index.postImages
+    events:
+      - http:
+          method: post
+          path: images
+          cors: true
+  deleteImages:
+    handler: index.deleteImages
+    events:
+      - http:
+          method: delete
+          path: images/{id}
+          cors: true
+          request:
+            parameters:
+              paths:
+                id: true
