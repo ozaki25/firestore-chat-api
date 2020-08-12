@@ -1,7 +1,3 @@
-const serverless = require('serverless-http');
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
 const admin = require('firebase-admin');
 const functions = require('firebase-functions');
 const serviceAccount = require('./serviceAccount.json');
@@ -17,18 +13,16 @@ const db = admin.firestore();
 const messagesRef = db.collection(MESSAGE_COLLECTION_NAME);
 const imagesRef = db.collection(IMAGE_COLLECTION_NAME);
 
-const app = express();
+const responseHeders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers':
+    'Origin, X-Requested-With, Content-Type, Accept',
+  'Access-Control-Allow-Methods': '*',
+};
 
-app.use(bodyParser.json());
-app.use(cors());
-
-app.get('/', (req, res) => {
-  res.send('Hello');
-});
-
-app.get('/messages', async (req, res, next) => {
+module.exports.getMessages = async event => {
   try {
-    const { limit: inputLimit, startAfterId: id } = req.query;
+    const { limit: inputLimit, startAfterId: id } = event.queryStringParameters;
     const limit = Number(inputLimit) || 30;
     let startAfter = '1970-01-01';
     if (id) {
@@ -44,53 +38,85 @@ app.get('/messages', async (req, res, next) => {
       .get();
     const messages = snapshots.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     console.log({ messages });
-    res.send(messages);
+    return {
+      statusCode: 200,
+      headers: responseHeders,
+      body: JSON.stringify(messages),
+    };
   } catch (e) {
     console.log(e);
-    next(e);
+    return {
+      statusCode: 500,
+      headers: responseHeders,
+      body: JSON.stringify(e.message),
+    };
   }
-});
+};
 
-app.post('/messages', async (req, res, next) => {
+module.exports.postMessages = async event => {
   console.log('POST /messages');
   try {
-    console.log(req.body);
-    const { content } = req.body;
+    console.log(event.body);
+    const { content } = JSON.parse(event.body);
     if (content) {
       const message = {
         content,
         timestamp: admin.firestore.FieldValue.serverTimestamp(),
       };
+      console.log({ message, collectionName: MESSAGE_COLLECTION_NAME });
       await messagesRef.add(message);
-      res.send(message);
+      console.log({ message, collectionName: MESSAGE_COLLECTION_NAME });
+      return {
+        statusCode: 200,
+        headers: responseHeders,
+        body: JSON.stringify(message),
+      };
     } else {
-      res.send(null);
+      return {
+        statusCode: 200,
+        headers: responseHeders,
+        body: 'post content is empty.',
+      };
     }
   } catch (e) {
     console.log(e);
-    next(e);
+    return {
+      statusCode: 500,
+      headers: responseHeders,
+      body: JSON.stringify(e.message),
+    };
   }
-});
+};
 
-app.delete('/messages/:id', async (req, res, next) => {
+module.exports.deleteMessages = async event => {
   console.log('DELET /messages/:id');
   try {
-    console.log(req.params);
-    const { id } = req.params;
+    console.log(event.pathParameters);
+    const { id } = event.pathParameters;
     if (id) {
       await messagesRef.doc(id).delete();
-      res.send(null);
+      return {
+        statusCode: 200,
+        headers: responseHeders,
+      };
     } else {
-      res.send(null);
+      return {
+        statusCode: 200,
+        headers: responseHeders,
+      };
     }
   } catch (e) {
     console.log(e);
-    next(e);
+    return {
+      statusCode: 500,
+      headers: responseHeders,
+      body: JSON.stringify(e.message),
+    };
   }
-});
+};
 
-app.get('/images', async (req, res, next) => {
-  const { limit: inputLimit, startAfterId: id } = req.query;
+module.exports.getImages = async event => {
+  const { limit: inputLimit, startAfterId: id } = event.queryStringParameters;
   const limit = Number(inputLimit) || 10;
   let startAfter = '1970-01-01';
   if (id) {
@@ -107,18 +133,26 @@ app.get('/images', async (req, res, next) => {
       .get();
     const images = snapshots.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     console.log({ images });
-    res.send(images);
+    return {
+      statusCode: 200,
+      headers: responseHeders,
+      body: JSON.stringify(images),
+    };
   } catch (e) {
     console.log(e);
-    next(e);
+    return {
+      statusCode: 500,
+      headers: responseHeders,
+      body: JSON.stringify(e.message),
+    };
   }
-});
+};
 
-app.post('/images', async (req, res, next) => {
+module.exports.postImages = async event => {
   console.log('POST /images');
   try {
-    console.log(req.body);
-    const { url, comment, caption } = req.body;
+    console.log(event.body);
+    const { url, comment, caption } = JSON.parse(event.body);
     if (url) {
       const image = {
         url,
@@ -127,36 +161,51 @@ app.post('/images', async (req, res, next) => {
         timestamp: admin.firestore.FieldValue.serverTimestamp(),
       };
       await imagesRef.add(image);
-      res.send(image);
+      return {
+        statusCode: 200,
+        headers: responseHeders,
+        body: JSON.stringify(image),
+      };
     } else {
-      res.send(null);
+      return {
+        statusCode: 200,
+        headers: responseHeders,
+        body: 'post url is empty.',
+      };
     }
   } catch (e) {
     console.log(e);
-    next(e);
+    return {
+      statusCode: 500,
+      headers: responseHeders,
+      body: JSON.stringify(e.message),
+    };
   }
-});
+};
 
-app.delete('/images/:id', async (req, res, next) => {
+module.exports.deleteImages = async event => {
   console.log('DELETE /images/:id');
   try {
-    console.log(req.params);
-    const { id } = req.params;
+    console.log(event.pathParameters);
+    const { id } = event.pathParameters;
     if (id) {
       await imagesRef.doc(id).delete();
-      res.send(null);
+      return {
+        statusCode: 200,
+        headers: responseHeders,
+      };
     } else {
-      res.send(null);
+      return {
+        statusCode: 200,
+        headers: responseHeders,
+      };
     }
   } catch (e) {
     console.log(e);
-    next(e);
+    return {
+      statusCode: 500,
+      headers: responseHeders,
+      body: JSON.stringify(e.message),
+    };
   }
-});
-
-module.exports.handler = serverless(app);
-
-const port = '8080';
-app.listen(port, () => {
-  console.log(`app start listening on port ${port}`);
-});
+};
